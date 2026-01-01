@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jaiamar S - Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="cursor-glow"></div>
+
+    <div id="preloader">
+        <div class="loader-cube-container">
+            <div class="loader-cube">
+                <div class="l-face l-front"></div>
+                <div class="l-face l-back"></div>
+                <div class="l-face l-left"></div>
+                <div class="l-face l-right"></div>
+                <div class="l-face l-top"></div>
+                <div class="l-face l-bottom"></div>
+            </div>
+            <div class="loading-text">Loading...</div>
+        </div>
+    </div>
+
+    <div class="background-container">
+        <canvas id="particle-canvas"></canvas>
+    </div>
+
+    <header>
+        <div class="logo">Portfolio.</div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="#home" class="active">HOME</a></li>
+                <li><a href="#about">ABOUT</a></li>
+                <li><a href="#services">SERVICES</a></li>
+                <li><a href="#projects">PROJECTS</a></li>
+                <li><a href="#contact">CONTACT</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        
+        <section id="home" class="slide home-slide">
+            <div class="content-container row-layout">
+                <div class="text-content">
+                    <h3 class="greeting">Hello !!!</h3>
+                    <h1 class="name">I'm Jaiamar S</h1>
+                    <div class="badge">AI Developer</div>
+                    <p class="description">
+                        CS Student specializing in AI/ML. Blending technical expertise in Python & Node.js with Japanese language proficiency to solve global challenges.
+                    </p>
+                    <a href="#contact" class="btn-yellow">Contact Me</a>
+                </div>
+                
+                <div class="skill-cube-wrapper">
+                    <div class="skill-cube">
+                        <div class="s-face s-front"><i class="fab fa-python"></i><span>Python</span></div>
+                        <div class="s-face s-back"><i class="fab fa-node-js"></i><span>Node.js</span></div>
+                        <div class="s-face s-left"><i class="fab fa-html5"></i><span>HTML</span></div>
+                        <div class="s-face s-right"><i class="fab fa-css3-alt"></i><span>CSS</span></div>
+                        <div class="s-face s-top"><i class="fab fa-github"></i><span>GitHub</span></div>
+                        <div class="s-face s-bottom"><i class="fas fa-fire"></i><span>Firebase</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="slide">
+            <div class="content-container col-layout">
+                <h2 class="section-title">About Me</h2>
+                <div class="about-grid">
+                    <div class="about-card full-width" data-tilt data-tilt-scale="1.02">
+                        <h3><i class="fas fa-user-graduate"></i> The Developer</h3>
+                        <p>
+                            I am a second-year Computer Science Engineering student specializing in Artificial Intelligence and Machine Learning. 
+                            My goal is to combine my technical expertise with my proficiency in the Japanese language to solve global tech challenges.
+                            I don't just learn theory; I build.
+                        </p>
+                    </div>
+                    <div class="about-card" data-tilt data-tilt-scale="1.05">
+                        <h3><i class="fas fa-laptop-code"></i> Technical Edge</h3>
+                        <p>
+                            <strong>Foundation:</strong> Python, Node.js, and Flutter, with hands-on experience using Firebase and GitHub.
+                            <br><br>
+                            <strong>Projects:</strong><br>
+                            • <em>AI Image Forgery Detection:</em> A system to distinguish between AI-generated images and real photographs.
+                            <br>
+                            • <em>Real-Time Language Translator:</em> A tool to break down communication barriers instantly.
+                        </p>
+                    </div>
+                    <div class="about-card" data-tilt data-tilt-scale="1.05">
+                        <h3><i class="fas fa-globe-asia"></i> Professional & Language</h3>
+                        <p>
+                            <strong>Japanese:</strong> JLPT N5 Cleared | JLPT N4 Candidate (Dec 2025).
+                            <br><br>
+                            <strong>Experience:</strong><br>
+                            I run my own digital marketing agency, serving as a Graphic Designer & Social Media Manager for international clients like <em>Pi By Me Maths</em> and <em>Adapt Sports Services (Dubai, UAE)</em>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="services" class="slide">
+            <div class="content-container col-layout">
+                <h2 class="section-title">Popular Services</h2>
+                <p class="section-subtitle">
+                    I provide high-standard solutions for web, mobile, and design needs.
+                </p>
+                <div class="toggle-container">
+                    <button class="toggle-btn active" onclick="filterServices('dev')">Development</button>
+                    <button class="toggle-btn" onclick="filterServices('design')">Design</button>
+                </div>
+                <div class="grid-3 services-grid">
+                    <div class="card service-item dev" data-tilt data-tilt-scale="1.05">
+                        <div class="icon-box"><i class="fas fa-code"></i></div>
+                        <h3>Web Development</h3>
+                        <p>Modern, responsive websites built with React and Node.js.</p>
+                        <a href="#" class="learn-more">Learn More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="card service-item dev" data-tilt data-tilt-scale="1.05">
+                        <div class="icon-box"><i class="fas fa-laptop-code"></i></div>
+                        <h3>Software</h3>
+                        <p>Robust desktop and system software solutions for various needs.</p>
+                        <a href="#" class="learn-more">Learn More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="card service-item design" style="display: none;" data-tilt data-tilt-scale="1.05">
+                        <div class="icon-box"><i class="fas fa-pen-nib"></i></div>
+                        <h3>Graphic Design</h3>
+                        <p>Creative visual concepts that communicate ideas that inspire and captivate consumers.</p>
+                        <a href="#" class="learn-more">Learn More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="card service-item design" style="display: none;" data-tilt data-tilt-scale="1.05">
+                        <div class="icon-box"><i class="fas fa-layer-group"></i></div>
+                        <h3>UI/UX Design</h3>
+                        <p>Designing user-friendly interfaces and enhancing user experience for digital products.</p>
+                        <a href="#" class="learn-more">Learn More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="slide">
+            <div class="content-container col-layout">
+                <h2 class="section-title">Featured Projects</h2>
+                <p class="section-subtitle">A selection of my recent work.</p>
+                <div class="grid-3 projects-grid">
+                    <div class="card project-card" data-tilt data-tilt-scale="1.05">
+                        <h3>AI Translator Bot</h3>
+                        <p>A real-time voice translation tool built with Python.</p>
+                        <div class="project-links">
+                            <a href="https://github.com/Jaiamar/Real-Time-language-translator-bot" target="_blank">
+                                <i class="fab fa-github"></i> Code
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card project-card" data-tilt data-tilt-scale="1.05">
+                        <h3>Forgery Detector</h3>
+                        <p>Deep learning model to detect manipulated images.</p>
+                        <div class="project-links">
+                            <a href="https://github.com/Jaiamar/AI-Image-Forgery-Detection" target="_blank">
+                                <i class="fab fa-github"></i> Code
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="slide contact-slide">
+            <div class="content-container col-layout">
+                <h2 class="section-title">Get In Touch</h2>
+                <div class="contact-grid">
+                    <a href="https://linkedin.com" target="_blank" class="contact-card" data-tilt data-tilt-scale="1.1">
+                        <div class="icon-layer"><i class="fab fa-linkedin-in"></i></div>
+                        <h3>LinkedIn</h3>
+                        <div class="arrow-btn"><i class="fas fa-arrow-right"></i></div>
+                    </a>
+                    <a href="https://github.com/Jaiamar" target="_blank" class="contact-card" data-tilt data-tilt-scale="1.1">
+                        <div class="icon-layer"><i class="fab fa-github"></i></div>
+                        <h3>GitHub</h3>
+                        <div class="arrow-btn"><i class="fas fa-arrow-right"></i></div>
+                    </a>
+                    <a href="mailto:jaiamar@example.com" class="contact-card" data-tilt data-tilt-scale="1.1">
+                        <div class="icon-layer"><i class="fas fa-envelope"></i></div>
+                        <h3>Email</h3>
+                        <div class="arrow-btn"><i class="fas fa-arrow-right"></i></div>
+                    </a>
+                </div>
+                <footer>
+                    <p>&copy; 2025 Jaiamar S. All Rights Reserved.</p>
+                </footer>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.2/vanilla-tilt.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
