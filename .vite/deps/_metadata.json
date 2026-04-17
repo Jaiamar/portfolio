@@ -1,0 +1,84 @@
+{
+  "hash": "64b58eb6",
+  "configHash": "515888f6",
+  "lockfileHash": "a5729bc8",
+  "browserHash": "e5e1e6d4",
+  "optimized": {
+    "@react-three/drei": {
+      "src": "../../node_modules/@react-three/drei/index.js",
+      "file": "@react-three_drei.js",
+      "fileHash": "eece9740",
+      "needsInterop": false
+    },
+    "@react-three/fiber": {
+      "src": "../../node_modules/@react-three/fiber/dist/react-three-fiber.esm.js",
+      "file": "@react-three_fiber.js",
+      "fileHash": "36d4d85b",
+      "needsInterop": false
+    },
+    "framer-motion": {
+      "src": "../../node_modules/framer-motion/dist/es/index.mjs",
+      "file": "framer-motion.js",
+      "fileHash": "aa82998a",
+      "needsInterop": false
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "c0590400",
+      "needsInterop": true
+    },
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "f2c34857",
+      "needsInterop": true
+    },
+    "react/jsx-dev-runtime": {
+      "src": "../../node_modules/react/jsx-dev-runtime.js",
+      "file": "react_jsx-dev-runtime.js",
+      "fileHash": "bf716991",
+      "needsInterop": true
+    },
+    "three": {
+      "src": "../../node_modules/three/build/three.module.js",
+      "file": "three.js",
+      "fileHash": "bff293f7",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-BoAXSpZd": {
+      "file": "chunk-BoAXSpZd.js",
+      "isDynamicEntry": false
+    },
+    "client-8VIY90bK": {
+      "file": "client-8VIY90bK.js",
+      "isDynamicEntry": false
+    },
+    "hls-Vau6qDX7": {
+      "file": "hls-Vau6qDX7.js",
+      "isDynamicEntry": false
+    },
+    "jsx-runtime-CVCLiDPH": {
+      "file": "jsx-runtime-CVCLiDPH.js",
+      "isDynamicEntry": false
+    },
+    "react-three-fiber.esm-FZdn1IXO": {
+      "file": "react-three-fiber.esm-FZdn1IXO.js",
+      "isDynamicEntry": false
+    },
+    "scheduler-Dos1ZBxL": {
+      "file": "scheduler-Dos1ZBxL.js",
+      "isDynamicEntry": false
+    },
+    "three.module-D9oaCJ3v": {
+      "file": "three.module-D9oaCJ3v.js",
+      "isDynamicEntry": false
+    },
+    "vision_bundle-bsoH7_t-": {
+      "file": "vision_bundle-bsoH7_t-.js",
+      "isDynamicEntry": true
+    }
+  }
+}

@@ -4,7 +4,8 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { Points, PointMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 
-// ── Cinematic Canvas Background (Matrix-style digital rain + pulse waves) ──────
+// ── Light Cinematic Canvas Background ─────────────────────────────────────────
+// Renders animated flowing light streams, soft ink-drop ripples, and geometric pulses
 function CinematicCanvas() {
   const canvasRef = useRef(null);
 
@@ -12,106 +13,129 @@ function CinematicCanvas() {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    let animId;
-    let w, h;
-    const FONT_SIZE = 13;
-    const CHARS = '01アイウエオカキクケコ∑∆∇∈⊕λμσ{}[]<>/*&^%#@!';
-    let columns = [];
+    let animId, w, h;
 
-    const buildColumns = () => {
-      const numCols = Math.floor(w / (FONT_SIZE * 1.6));
-      columns = Array.from({ length: numCols }, (_, i) => ({
-        x: i * FONT_SIZE * 1.6,
-        y: Math.random() * -h,
-        speed: 0.8 + Math.random() * 2,
-        len: 6 + Math.floor(Math.random() * 18),
-        chars: Array.from({ length: 30 }, () => CHARS[Math.floor(Math.random() * CHARS.length)]),
-        timer: 0,
-        opacity: 0.25 + Math.random() * 0.55,
-        cyan: Math.random() < 0.65,
+    // Particle streams
+    const STREAM_COUNT = 60;
+    let streams = [];
+
+    const buildStreams = () => {
+      streams = Array.from({ length: STREAM_COUNT }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: -0.4 - Math.random() * 0.8,
+        len: 40 + Math.random() * 80,
+        opacity: 0.2 + Math.random() * 0.5,
+        size: 1 + Math.random() * 2,
+        hue: Math.random() < 0.6 ? 'indigo' : Math.random() < 0.5 ? 'violet' : 'cyan',
+        life: Math.random() * 100,
+        maxLife: 120 + Math.random() * 80,
       }));
     };
 
     const resize = () => {
       w = canvas.width = canvas.offsetWidth;
       h = canvas.height = canvas.offsetHeight;
-      buildColumns();
+      buildStreams();
     };
-
     resize();
     const ro = new ResizeObserver(resize);
     ro.observe(canvas);
 
-    let pulseT = 0;
+    // Ripples
+    let ripples = [];
+    const addRipple = () => {
+      ripples.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: 0,
+        maxR: 80 + Math.random() * 120,
+        alpha: 0.15,
+        hue: Math.random() < 0.5 ? 'rgba(79,70,229,' : 'rgba(124,58,237,',
+      });
+    };
+    const rippleInterval = setInterval(addRipple, 1200);
+
+    let t = 0;
 
     const draw = () => {
-      ctx.fillStyle = 'rgba(3, 7, 18, 0.15)';
+      t++;
+      // Soft clear — trails fade slowly
+      ctx.fillStyle = 'rgba(248,249,255,0.10)';
       ctx.fillRect(0, 0, w, h);
 
-      ctx.font = `${FONT_SIZE}px 'JetBrains Mono', monospace`;
-
-      columns.forEach((col) => {
-        col.timer++;
-        if (col.timer > 5) {
-          col.chars.shift();
-          col.chars.push(CHARS[Math.floor(Math.random() * CHARS.length)]);
-          col.timer = 0;
-        }
-        for (let ci = 0; ci < col.len; ci++) {
-          const charY = col.y - ci * FONT_SIZE;
-          if (charY < 0 || charY > h) continue;
-          const a = ci === 0 ? 1 : Math.max(0, (1 - ci / col.len)) * col.opacity;
-          if (ci === 0) {
-            ctx.fillStyle = `rgba(200, 255, 255, ${a})`;
-          } else if (col.cyan) {
-            ctx.fillStyle = `rgba(0, 212, 255, ${a * 0.65})`;
-          } else {
-            ctx.fillStyle = `rgba(168, 85, 247, ${a * 0.5})`;
-          }
-          ctx.fillText(col.chars[ci] || '0', col.x, charY);
-        }
-        col.y += col.speed;
-        if (col.y - col.len * FONT_SIZE > h) {
-          col.y = Math.random() * -150;
-          col.speed = 0.8 + Math.random() * 2;
-          col.cyan = Math.random() < 0.65;
-        }
+      // ── Draw ripples ─────────────────────────────────
+      ripples = ripples.filter(rp => rp.r < rp.maxR);
+      ripples.forEach(rp => {
+        rp.r += 1.2;
+        rp.alpha = 0.12 * (1 - rp.r / rp.maxR);
+        ctx.beginPath();
+        ctx.arc(rp.x, rp.y, rp.r, 0, Math.PI * 2);
+        ctx.strokeStyle = `${rp.hue}${rp.alpha})`;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
       });
 
-      // Radial pulse waves from center
-      pulseT += 0.006;
-      const cx = w / 2, cy = h / 2;
-      for (let r = 0; r < 3; r++) {
-        const rad = ((pulseT * 160 + r * 130) % 700);
-        const a = Math.max(0, 1 - rad / 600) * 0.05;
-        if (a < 0.001 || rad < 4) continue;
-        const g = ctx.createRadialGradient(cx, cy, Math.max(0, rad - 3), cx, cy, rad + 3);
-        g.addColorStop(0, `rgba(0,212,255,${a})`);
-        g.addColorStop(1, 'transparent');
-        ctx.fillStyle = g;
-        ctx.fillRect(0, 0, w, h);
+      // ── Draw particle streams ─────────────────────────
+      streams.forEach(s => {
+        s.life++;
+        s.x += s.vx + Math.sin(t * 0.01 + s.y * 0.005) * 0.2;
+        s.y += s.vy;
+
+        if (s.y < -20 || s.life > s.maxLife) {
+          s.x = Math.random() * w;
+          s.y = h + 10;
+          s.life = 0;
+          s.vy = -0.4 - Math.random() * 0.8;
+          s.opacity = 0.15 + Math.random() * 0.5;
+        }
+
+        const lifeRatio = s.life / s.maxLife;
+        const alpha = s.opacity * Math.sin(lifeRatio * Math.PI);
+
+        let color;
+        if (s.hue === 'indigo') color = `rgba(79,70,229,${alpha})`;
+        else if (s.hue === 'violet') color = `rgba(124,58,237,${alpha})`;
+        else color = `rgba(8,145,178,${alpha})`;
+
+        // Draw streak
+        ctx.beginPath();
+        const grad = ctx.createLinearGradient(s.x, s.y, s.x + s.vx * s.len, s.y + s.vy * s.len * 0.8);
+        grad.addColorStop(0, color);
+        grad.addColorStop(1, 'transparent');
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = s.size;
+        ctx.lineCap = 'round';
+        ctx.moveTo(s.x, s.y);
+        ctx.lineTo(s.x + s.vx * s.len, s.y + s.vy * s.len * 0.8);
+        ctx.stroke();
+
+        // Head dot
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.size * 0.8, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
+      });
+
+      // ── Subtle grid pulse ─────────────────────────────
+      const pulseAlpha = 0.015 + 0.01 * Math.sin(t * 0.02);
+      ctx.strokeStyle = `rgba(79,70,229,${pulseAlpha})`;
+      ctx.lineWidth = 0.5;
+      const gSize = 60;
+      for (let gx = 0; gx < w; gx += gSize) {
+        ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, h); ctx.stroke();
+      }
+      for (let gy = 0; gy < h; gy += gSize) {
+        ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(w, gy); ctx.stroke();
       }
 
-      // Vignette
-      const vig = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.hypot(cx, cy));
-      vig.addColorStop(0, 'transparent');
-      vig.addColorStop(0.6, 'rgba(3,7,18,0.4)');
-      vig.addColorStop(1, 'rgba(3,7,18,0.95)');
-      ctx.fillStyle = vig;
+      // Vignette edges
+      const vg = ctx.createRadialGradient(w / 2, h / 2, h * 0.3, w / 2, h / 2, Math.hypot(w / 2, h / 2));
+      vg.addColorStop(0, 'transparent');
+      vg.addColorStop(1, 'rgba(248,249,255,0.6)');
+      ctx.fillStyle = vg;
       ctx.fillRect(0, 0, w, h);
-
-      // Bottom fade
-      const btm = ctx.createLinearGradient(0, h * 0.55, 0, h);
-      btm.addColorStop(0, 'transparent');
-      btm.addColorStop(1, 'rgba(3,7,18,1)');
-      ctx.fillStyle = btm;
-      ctx.fillRect(0, 0, w, h);
-
-      // Scanlines
-      for (let y = 0; y < h; y += 4) {
-        ctx.fillStyle = 'rgba(0,0,0,0.055)';
-        ctx.fillRect(0, y, w, 2);
-      }
 
       animId = requestAnimationFrame(draw);
     };
@@ -119,6 +143,7 @@ function CinematicCanvas() {
     draw();
     return () => {
       cancelAnimationFrame(animId);
+      clearInterval(rippleInterval);
       ro.disconnect();
     };
   }, []);
@@ -129,30 +154,31 @@ function CinematicCanvas() {
       style={{
         position: 'absolute', inset: 0, zIndex: 0,
         width: '100%', height: '100%',
+        opacity: 1,
       }}
     />
   );
 }
 
-// ── 3D Particle Field ──────────────────────────────────────────────────────────
+// ── 3D Particle Field (Light — soft indigo dots) ───────────────────────────────
 function ParticleField() {
   const ref = useRef();
-  const count = 3000;
+  const count = 2500;
 
   const positions = React.useMemo(() => {
     const pos = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      pos[i * 3]     = (Math.random() - 0.5) * 20;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 20;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 20;
+      pos[i * 3]     = (Math.random() - 0.5) * 18;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 18;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 18;
     }
     return pos;
   }, []);
 
   useFrame((state) => {
     if (ref.current) {
-      ref.current.rotation.x = state.clock.elapsedTime * 0.03;
-      ref.current.rotation.y = state.clock.elapsedTime * 0.05;
+      ref.current.rotation.x = state.clock.elapsedTime * 0.025;
+      ref.current.rotation.y = state.clock.elapsedTime * 0.04;
     }
   });
 
@@ -160,11 +186,11 @@ function ParticleField() {
     <Points ref={ref} positions={positions} stride={3}>
       <PointMaterial
         transparent
-        color="#00d4ff"
-        size={0.035}
+        color="#4f46e5"
+        size={0.03}
         sizeAttenuation
         depthWrite={false}
-        opacity={0.6}
+        opacity={0.35}
       />
     </Points>
   );
@@ -205,9 +231,13 @@ function TypingText() {
   }, [displayed, deleting, paused, roleIdx]);
 
   return (
-    <span style={{ color: 'var(--accent-cyan)', fontFamily: 'var(--font-mono)' }}>
+    <span style={{
+      background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-violet))',
+      WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+      fontFamily: 'var(--font-mono)', fontWeight: 700,
+    }}>
       {displayed}
-      <span style={{ animation: 'blink 1s infinite', color: 'var(--accent-violet)' }}>|</span>
+      <span style={{ animation: 'blink 1s infinite', WebkitTextFillColor: 'var(--accent-primary)' }}>|</span>
     </span>
   );
 }
@@ -222,62 +252,75 @@ function ScrollIndicator() {
         position: 'absolute', bottom: '40px', left: '50%',
         transform: 'translateX(-50%)',
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px',
-        color: 'var(--text-muted)', fontSize: '0.75rem', fontFamily: 'var(--font-mono)',
-        letterSpacing: '0.1em', zIndex: 5,
+        color: 'var(--text-muted)', fontSize: '0.72rem', fontFamily: 'var(--font-mono)',
+        letterSpacing: '0.12em', zIndex: 5,
       }}
     >
       <span>scroll</span>
       <div style={{
-        width: '1px', height: '50px',
-        background: 'linear-gradient(to bottom, var(--accent-cyan), transparent)',
+        width: '1px', height: '48px',
+        background: 'linear-gradient(to bottom, var(--accent-primary), transparent)',
       }} />
     </motion.div>
   );
 }
 
-// ── Main Hero ─────────────────────────────────────────────────────────────────
+// ── Main Hero ──────────────────────────────────────────────────────────────────
 export default function Hero() {
   const containerVariants = {
     hidden: {},
-    visible: { transition: { staggerChildren: 0.15 } },
+    visible: { transition: { staggerChildren: 0.14 } },
   };
 
   const childVariants = {
-    hidden: { opacity: 0, y: 40, filter: 'blur(8px)' },
+    hidden: { opacity: 0, y: 40, filter: 'blur(10px)' },
     visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.9, ease: [0.22, 1, 0.36, 1] } },
   };
 
   return (
-    <section id="hero" style={{ position: 'relative', height: '100vh', overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
-
-      {/* ── Cinematic Canvas Background (digital rain + pulse) ─ */}
+    <section id="hero" style={{
+      position: 'relative', height: '100vh', overflow: 'hidden',
+      display: 'flex', alignItems: 'center',
+      background: 'linear-gradient(135deg, #f0f3ff 0%, #f8f9ff 40%, #fdf4ff 100%)',
+    }}>
+      {/* Cinematic light canvas */}
       <CinematicCanvas />
 
-      {/* Purple/cyan ambient glow */}
+      {/* Floating gradient orbs */}
       <div style={{
-        position: 'absolute', inset: 0, zIndex: 0,
-        background: 'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(124,58,237,0.1) 0%, transparent 65%)',
+        position: 'absolute', top: '10%', right: '5%', zIndex: 1,
+        width: '500px', height: '500px', borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(79,70,229,0.12) 0%, rgba(124,58,237,0.06) 50%, transparent 70%)',
+        filter: 'blur(60px)', animation: 'float 9s ease-in-out infinite',
+        pointerEvents: 'none',
+      }} />
+      <div style={{
+        position: 'absolute', bottom: '10%', left: '5%', zIndex: 1,
+        width: '380px', height: '380px', borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(8,145,178,0.1) 0%, transparent 70%)',
+        filter: 'blur(60px)', animation: 'float 7s ease-in-out infinite 1.5s',
+        pointerEvents: 'none',
+      }} />
+      <div style={{
+        position: 'absolute', top: '40%', right: '20%', zIndex: 1,
+        width: '300px', height: '300px', borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(219,39,119,0.08) 0%, transparent 70%)',
+        filter: 'blur(50px)', animation: 'float 11s ease-in-out infinite 3s',
         pointerEvents: 'none',
       }} />
 
-      {/* ── 3D Particle Canvas ───────────────────────────── */}
-      <div style={{ position: 'absolute', inset: 0, zIndex: 1, opacity: 0.45 }}>
+      {/* 3D Particle canvas — very subtle */}
+      <div style={{ position: 'absolute', inset: 0, zIndex: 1, opacity: 0.3 }}>
         <Canvas camera={{ position: [0, 0, 5] }}>
           <ParticleField />
         </Canvas>
       </div>
 
-      {/* ── Glowing grid lines ───────────────────────────── */}
-      <div style={{
-        position: 'absolute', inset: 0, zIndex: 1,
-        backgroundImage: `
-          linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px)
-        `,
-        backgroundSize: '80px 80px',
-        maskImage: 'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 80%)',
-        WebkitMaskImage: 'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 80%)',
-        pointerEvents: 'none',
+      {/* Dot grid pattern */}
+      <div className="dot-grid" style={{
+        position: 'absolute', inset: 0, zIndex: 1, opacity: 0.6, pointerEvents: 'none',
+        maskImage: 'radial-gradient(ellipse 65% 65% at 50% 50%, black 0%, transparent 80%)',
+        WebkitMaskImage: 'radial-gradient(ellipse 65% 65% at 50% 50%, black 0%, transparent 80%)',
       }} />
 
       {/* ── Content ──────────────────────────────────────── */}
@@ -286,36 +329,45 @@ export default function Hero() {
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          style={{ maxWidth: '780px' }}
+          style={{ maxWidth: '760px' }}
         >
-          {/* Top tag */}
-          <motion.div variants={childVariants} style={{ marginBottom: '24px' }}>
-            <span className="section-tag" style={{ marginBottom: 0 }}>
+          {/* Status chip */}
+          <motion.div variants={childVariants} style={{ marginBottom: '28px' }}>
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: '8px',
+              padding: '6px 16px', borderRadius: '50px',
+              background: 'rgba(79,70,229,0.08)',
+              border: '1px solid rgba(79,70,229,0.18)',
+              fontFamily: 'var(--font-mono)', fontSize: '0.75rem',
+              color: 'var(--accent-primary)', fontWeight: 500,
+              letterSpacing: '0.06em',
+            }}>
               <span style={{
-                display: 'inline-block', width: '8px', height: '8px',
+                display: 'inline-block', width: '7px', height: '7px',
                 borderRadius: '50%', background: 'var(--accent-green)',
-                animation: 'pulse-glow 2s infinite',
-                boxShadow: '0 0 10px var(--accent-green)',
+                animation: 'pulse-soft 2s infinite',
+                boxShadow: '0 0 8px var(--accent-green)',
               }} />
-              Available for opportunities
+              AVAILABLE FOR OPPORTUNITIES
             </span>
           </motion.div>
 
           {/* Name */}
           <motion.h1 variants={childVariants} style={{
-            fontSize: 'clamp(2.5rem, 7vw, 5.5rem)',
+            fontSize: 'clamp(2.8rem, 7vw, 5.5rem)',
             fontWeight: 900, lineHeight: 1.05,
+            color: 'var(--text-primary)',
             marginBottom: '16px',
-            letterSpacing: '-0.02em',
+            letterSpacing: '-0.03em',
           }}>
             I'm{' '}
             <span className="gradient-text">Jaiamar S.</span>
           </motion.h1>
 
-          {/* Typing role */}
+          {/* Role typing */}
           <motion.div variants={childVariants} style={{
-            fontSize: 'clamp(1.1rem, 3vw, 1.8rem)',
-            fontWeight: 600, marginBottom: '24px',
+            fontSize: 'clamp(1.1rem, 3vw, 1.75rem)',
+            fontWeight: 700, marginBottom: '24px',
             minHeight: '2.5rem',
           }}>
             <TypingText />
@@ -323,16 +375,16 @@ export default function Hero() {
 
           {/* Description */}
           <motion.p variants={childVariants} style={{
-            fontSize: '1.05rem', lineHeight: 1.75,
-            color: 'var(--text-secondary)', maxWidth: '580px',
-            marginBottom: '40px',
+            fontSize: '1.05rem', lineHeight: 1.8,
+            color: 'var(--text-secondary)', maxWidth: '560px',
+            marginBottom: '44px',
           }}>
             I architect scalable digital infrastructure and engineer intelligent, data-driven systems.
             My focus is bridging complex backend logic with seamless, user-centric design.
           </motion.p>
 
           {/* CTAs */}
-          <motion.div variants={childVariants} style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+          <motion.div variants={childVariants} style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
             <a
               href="#projects"
               className="btn-primary"
@@ -343,7 +395,7 @@ export default function Hero() {
               }}
             >
               <span>View Projects</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
               </svg>
             </a>
@@ -352,27 +404,39 @@ export default function Hero() {
             </a>
           </motion.div>
 
-          {/* Stats row */}
+          {/* Stats */}
           <motion.div variants={childVariants} style={{
-            display: 'flex', gap: '40px', marginTop: '56px', flexWrap: 'wrap',
+            display: 'flex', gap: '40px', marginTop: '60px', flexWrap: 'wrap',
           }}>
             {[
-              { num: '4+', label: 'Internships' },
-              { num: '4', label: 'AI Projects' },
-              { num: 'IEEE', label: 'Researcher' },
+              { num: '4+', label: 'Internships', icon: '💼' },
+              { num: '4', label: 'AI Projects', icon: '🤖' },
+              { num: 'IEEE', label: 'Researcher', icon: '📄' },
             ].map((s, i) => (
-              <div key={i}>
+              <motion.div
+                key={i}
+                whileHover={{ scale: 1.05 }}
+                style={{
+                  background: 'rgba(255,255,255,0.7)',
+                  border: '1px solid rgba(79,70,229,0.12)',
+                  borderRadius: '14px',
+                  padding: '14px 20px',
+                  backdropFilter: 'blur(12px)',
+                  boxShadow: '0 2px 12px rgba(79,70,229,0.08)',
+                }}
+              >
+                <div style={{ fontSize: '0.9rem', marginBottom: '4px' }}>{s.icon}</div>
                 <div style={{
-                  fontSize: '2rem', fontWeight: 800,
-                  background: 'linear-gradient(135deg, var(--accent-cyan), var(--accent-violet))',
+                  fontSize: '1.8rem', fontWeight: 800,
+                  background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-violet))',
                   WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
                 }}>
                   {s.num}
                 </div>
-                <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginTop: '2px' }}>
                   {s.label}
                 </div>
-              </div>
+              </motion.div>
             ))}
           </motion.div>
         </motion.div>
@@ -381,21 +445,15 @@ export default function Hero() {
       {/* Scroll indicator */}
       <ScrollIndicator />
 
-      {/* Corner glow decorations */}
+      {/* Bottom wave separator */}
       <div style={{
-        position: 'absolute', top: '20%', right: '8%', zIndex: 2,
-        width: '300px', height: '300px', borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%)',
-        filter: 'blur(60px)', animation: 'float 8s ease-in-out infinite',
-        pointerEvents: 'none',
-      }} />
-      <div style={{
-        position: 'absolute', bottom: '15%', right: '15%', zIndex: 2,
-        width: '200px', height: '200px', borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(0,212,255,0.1) 0%, transparent 70%)',
-        filter: 'blur(40px)', animation: 'float 6s ease-in-out infinite 2s',
-        pointerEvents: 'none',
-      }} />
+        position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 3, pointerEvents: 'none',
+        lineHeight: 0,
+      }}>
+        <svg viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%' }}>
+          <path d="M0 60L60 50C120 40 240 20 360 15C480 10 600 20 720 25C840 30 960 30 1080 25C1200 20 1320 10 1380 5L1440 0V60H1380C1320 60 1200 60 1080 60C960 60 840 60 720 60C600 60 480 60 360 60C240 60 120 60 60 60H0Z" fill="#f0f3ff"/>
+        </svg>
+      </div>
     </section>
   );
 }

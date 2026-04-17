@@ -35,69 +35,51 @@ export default function Navbar() {
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
       style={{
-        position: 'fixed',
-        top: 0, left: 0, right: 0,
-        zIndex: 1000,
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000,
         padding: '0 24px',
+        background: scrolled ? 'rgba(248,249,255,0.88)' : 'transparent',
+        backdropFilter: scrolled ? 'blur(20px) saturate(180%)' : 'none',
+        borderBottom: scrolled ? '1px solid rgba(79,70,229,0.1)' : 'none',
+        boxShadow: scrolled ? '0 1px 20px rgba(79,70,229,0.08)' : 'none',
         transition: 'all 0.4s ease',
-        background: scrolled
-          ? 'rgba(3, 7, 18, 0.85)'
-          : 'transparent',
-        backdropFilter: scrolled ? 'blur(20px)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(255,255,255,0.06)' : 'none',
       }}
     >
       <div style={{
-        maxWidth: '1200px',
-        margin: '0 auto',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
+        maxWidth: '1200px', margin: '0 auto',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         height: '72px',
       }}>
         {/* Logo */}
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          style={{ cursor: 'none' }}
-          onClick={() => handleNav('#hero')}
-        >
-          <span style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '1.1rem',
-            fontWeight: 700,
-          }}>
+        <motion.div whileHover={{ scale: 1.05 }} style={{ cursor: 'none' }} onClick={() => handleNav('#hero')}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '1.1rem', fontWeight: 700 }}>
             <span className="gradient-text">Jaiamar</span>
-            <span style={{ color: 'var(--accent-cyan)', marginLeft: 2 }}>.</span>
+            <span style={{ color: 'var(--accent-primary)', marginLeft: 1 }}>.</span>
           </span>
         </motion.div>
 
         {/* Desktop Links */}
-        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }} className="desktop-nav">
+        <div style={{ display: 'flex', gap: '2px', alignItems: 'center' }} className="desktop-nav">
           {navItems.map((item, i) => (
             <motion.button
               key={item.href}
               onClick={() => handleNav(item.href)}
-              whileHover={{ scale: 1.05 }}
-              initial={{ opacity: 0, y: -20 }}
+              whileHover={{ scale: 1.04 }}
+              initial={{ opacity: 0, y: -16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 + 0.3 }}
               style={{
-                background: 'none',
-                border: active === item.href ? '1px solid rgba(0,212,255,0.3)' : '1px solid transparent',
+                background: active === item.href ? 'rgba(79,70,229,0.08)' : 'none',
+                border: active === item.href ? '1px solid rgba(79,70,229,0.2)' : '1px solid transparent',
                 borderRadius: '50px',
                 padding: '6px 16px',
-                color: active === item.href ? 'var(--accent-cyan)' : 'var(--text-secondary)',
-                fontFamily: 'var(--font-main)',
-                fontSize: '0.88rem',
-                fontWeight: 500,
-                cursor: 'none',
-                transition: 'all 0.3s',
-                backgroundColor: active === item.href ? 'rgba(0,212,255,0.07)' : 'transparent',
+                color: active === item.href ? 'var(--accent-primary)' : 'var(--text-secondary)',
+                fontFamily: 'var(--font-main)', fontSize: '0.88rem', fontWeight: 500,
+                cursor: 'none', transition: 'all 0.2s',
               }}
               onMouseEnter={e => {
                 if (active !== item.href) {
                   e.target.style.color = 'var(--text-primary)';
-                  e.target.style.backgroundColor = 'rgba(255,255,255,0.04)';
+                  e.target.style.backgroundColor = 'rgba(79,70,229,0.05)';
                 }
               }}
               onMouseLeave={e => {
@@ -114,7 +96,7 @@ export default function Navbar() {
           <motion.a
             href="mailto:jaiamarifs@gmail.com"
             className="btn-primary"
-            style={{ padding: '8px 20px', fontSize: '0.85rem', marginLeft: '8px', textDecoration: 'none' }}
+            style={{ padding: '8px 20px', fontSize: '0.85rem', marginLeft: '10px', textDecoration: 'none' }}
             whileHover={{ scale: 1.05 }}
             data-cursor
           >
@@ -122,37 +104,31 @@ export default function Navbar() {
           </motion.a>
         </div>
 
-        {/* Mobile Hamburger */}
+        {/* Mobile hamburger */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          style={{
-            display: 'none',
-            background: 'none',
-            border: 'none',
-            color: 'var(--text-primary)',
-            cursor: 'none',
-            flexDirection: 'column',
-            gap: '5px',
-            padding: '4px',
-          }}
           className="mobile-menu-btn"
+          style={{
+            display: 'none', background: 'none', border: 'none',
+            cursor: 'none', flexDirection: 'column', gap: '5px', padding: '4px',
+          }}
         >
-          {[0,1,2].map(i => (
+          {[0, 1, 2].map(i => (
             <span key={i} style={{
               display: 'block', width: '22px', height: '2px',
               background: menuOpen
-                ? i === 1 ? 'transparent' : 'var(--accent-cyan)'
+                ? i === 1 ? 'transparent' : 'var(--accent-primary)'
                 : 'var(--text-primary)',
               transform: menuOpen
                 ? i === 0 ? 'rotate(45deg) translate(5px, 5px)' : i === 2 ? 'rotate(-45deg) translate(5px, -5px)' : ''
                 : '',
-              transition: 'all 0.3s',
+              transition: 'all 0.3s', borderRadius: '2px',
             }} />
           ))}
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile menu */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -160,9 +136,9 @@ export default function Navbar() {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             style={{
-              background: 'rgba(3, 7, 18, 0.95)',
+              background: 'rgba(248,249,255,0.95)',
               backdropFilter: 'blur(20px)',
-              borderTop: '1px solid rgba(255,255,255,0.06)',
+              borderTop: '1px solid rgba(79,70,229,0.1)',
               padding: '16px 24px',
             }}
           >
@@ -175,7 +151,7 @@ export default function Navbar() {
                   padding: '12px 0', background: 'none', border: 'none',
                   color: 'var(--text-secondary)', fontFamily: 'var(--font-main)',
                   fontSize: '1rem', cursor: 'none',
-                  borderBottom: '1px solid rgba(255,255,255,0.04)',
+                  borderBottom: '1px solid rgba(79,70,229,0.06)',
                 }}
               >
                 {item.label}

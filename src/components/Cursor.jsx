@@ -13,6 +13,7 @@ export default function Cursor() {
       pos.current = { x: e.clientX, y: e.clientY };
       if (dotRef.current) {
         dotRef.current.style.transform = `translate(${e.clientX - 4}px, ${e.clientY - 4}px)`;
+        dotRef.current.style.background = 'var(--accent-primary)';
       }
     };
 
