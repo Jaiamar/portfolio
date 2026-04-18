@@ -8,6 +8,7 @@ import Hero from './components/Hero';
 import About from './components/About';
 import Skills from './components/Skills';
 import Projects from './components/Projects';
+import Services from './components/Services';
 import Timeline from './components/Timeline';
 import Awards from './components/Awards';
 import Contact from './components/Contact';
@@ -77,6 +78,10 @@ export default function App() {
 
         <SectionTransition>
           <Projects />
+        </SectionTransition>
+
+        <SectionTransition>
+          <Services />
         </SectionTransition>
 
         <SectionTransition>

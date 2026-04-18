@@ -196,18 +196,75 @@ export default function Contact() {
           ))}
         </div>
 
-        {/* Footer bar */}
+        {/* Professional Footer */}
+        <div style={{
+          marginTop: '100px',
+          borderTop: '1px solid rgba(79,70,229,0.15)',
+          paddingTop: '60px',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: '40px',
+          textAlign: 'left'
+        }} className="pro-footer">
+          
+          {/* Brand Col */}
+          <div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '1.4rem', fontWeight: 800, marginBottom: '16px' }}>
+              <span className="gradient-text">Jaiamar</span>
+              <span style={{ color: 'var(--accent-primary)' }}>.</span>
+            </div>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.7, marginBottom: '24px' }}>
+              Architecting scalable, high-performance web solutions and AI systems that drive true business value. Emphasizing clean code and robust architecture in every project.
+            </p>
+          </div>
+
+          {/* Quick Links */}
+          <div>
+            <h4 style={{ color: 'var(--text-primary)', fontSize: '1rem', fontWeight: 700, marginBottom: '20px' }}>Navigation</h4>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {['Home', 'Services', 'Experience', 'Projects', 'Contact'].map(link => (
+                <li key={link}>
+                  <a href={`#${link.toLowerCase()}`} style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = 'var(--accent-primary)'} onMouseLeave={e => e.target.style.color = 'var(--text-secondary)'}>
+                    {link}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact Info */}
+          <div>
+            <h4 style={{ color: 'var(--text-primary)', fontSize: '1rem', fontWeight: 700, marginBottom: '20px' }}>Reach Out</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <a href="mailto:jaiamarifs@gmail.com" style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--accent-primary)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                jaiamarifs@gmail.com
+              </a>
+              <a href="https://wa.me/919342844932" target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#25D366'} onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                +91 93428 44932
+              </a>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                Available Worldwide
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Bar */}
         <div style={{
           borderTop: '1px solid rgba(79,70,229,0.08)',
           paddingTop: '28px',
+          marginTop: '40px',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           flexWrap: 'wrap', gap: '10px',
         }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-            © 2025 <span className="gradient-text" style={{ fontWeight: 700 }}>Jaiamar S.</span> — All rights reserved.
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+            © {new Date().getFullYear()} <span className="gradient-text" style={{ fontWeight: 700 }}>Jaiamar S.</span> — All rights reserved.
           </span>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            Built with React · Three.js · Framer Motion
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+            Elevating the Web, One Project at a Time
           </span>
         </div>
       </div>

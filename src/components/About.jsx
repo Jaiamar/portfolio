@@ -42,7 +42,7 @@ const philosophies = [
   {
     icon: '🌐',
     title: 'Beyond the Screen',
-    text: 'Driven by continuous learning — studying Japanese (post-JLPT N5), researching motorcycle mechanics, playing basketball, and optimizing competitive gaming setups.',
+    text: 'I am driven by continuous learning and tackling new challenges, both technical and personal. I am actively studying the Japanese language and culture, currently advancing my proficiency after clearing the JLPT N5.',
     accent: 'var(--accent-cyan)',
     bg: 'rgba(8,145,178,0.05)',
   },
