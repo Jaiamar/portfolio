@@ -26,8 +26,16 @@ export default function Navbar() {
   const handleNav = (href) => {
     setActive(href);
     setMenuOpen(false);
-    const el = document.querySelector(href);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    
+    // Slight delay prevents mobile scroll-cancelling when the menu unmounts
+    setTimeout(() => {
+      const el = document.querySelector(href);
+      if (el) {
+        // Offset by 80px to account for the fixed navbar height
+        const top = el.getBoundingClientRect().top + window.scrollY - 80;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    }, 100);
   };
 
   return (
